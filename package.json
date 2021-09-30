@@ -1,0 +1,23 @@
+{
+  "name": "sdc-products",
+  "version": "1.0.0",
+  "description": "Product API Endpoints",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hr-rfp55-sdc2-cucco/sdc2-products.git"
+  },
+  "author": "Caleb Kim",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hr-rfp55-sdc2-cucco/sdc2-products/issues"
+  },
+  "homepage": "https://github.com/hr-rfp55-sdc2-cucco/sdc2-products#readme",
+  "dependencies": {
+    "pg": "^8.7.1",
+    "postgres": "^1.0.2"
+  }
+}

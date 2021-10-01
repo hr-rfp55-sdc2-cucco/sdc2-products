@@ -32,33 +32,47 @@ const product = (id, callback) => {
 
 const styles = (id, callback) => {
   pool.query(`SELECT * FROM styles WHERE product_id = ${id}`)
-    .then((style) => {
-      const styleIds = style.rows.map((item) => item.id);
-
-      let stylesObj = {
-        product_id: id,
-      };
-      let finalStyles = style.rows.map((item) => {
-        const resultsObj = {
-          style_id: item.id,
-          name: item.name,
-          original_price: item.original_price,
-          sale_price: item.sale_price,
-          default: item.default_style,
-        };
-        return resultsObj;
-      });
-      console.log(styleIds);
-      for (let i = 0; i < styleIds.length; i += 1) {
-        pool.query(`SELECT * FROM skus WHERE style_id = ${styleIds[i]}`)
-          .then((ps) => {
-            stylesObj.results[i].skus = ps.rows;
-            console.log(stylesObj.results);
-          });
-      }
-      stylesObj.results = finalStyles;
-      console.log(stylesObj);
-      callback(stylesObj);
+    .then((prod) => {
+      pool.query(`SELECT * FROM styles y INNER JOIN skus s ON y.id = s.style_id WHERE y.product_id = ${id}`)
+        .then((skus) => {
+          pool.query(`SELECT * FROM styles y INNER JOIN photos p ON y.id = p.style_id WHERE y.product_id = ${id}`)
+            .then((photos) => {
+              let stylesObj = {
+                product_id: id,
+                results: [],
+              };
+              const styleIds = prod.rows.map((item) => item.id);
+              for (let i = 0; i < styleIds.length; i += 1) {
+                let resultsObject = {
+                  style_id: prod.rows[i].id,
+                  name: prod.rows[i].name,
+                  original_price: prod.rows[i].original_price,
+                  sale_price: prod.rows[i].sale_price,
+                  default: prod.rows[i].default_style,
+                };
+                const skusObject = {};
+                resultsObject.photos = photos.rows.filter((item) => (
+                  item.style_id === styleIds[i]
+                ))
+                  .map((item) => ({
+                    thumbnail_url: item.thumbnail_url,
+                    url: item.url,
+                  }));
+                const skusArray = skus.rows.filter((item) => (
+                  item.style_id === styleIds[i]
+                ))
+                  .forEach((item) => {
+                    skusObject[item.id] = {
+                      quantity: item.quantity,
+                      size: item.size,
+                    };
+                  });
+                resultsObject.skus = skusObject;
+                stylesObj.results.push(resultsObject);
+              }
+              callback(stylesObj);
+            });
+        });
     });
 };
 

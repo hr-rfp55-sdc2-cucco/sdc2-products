@@ -37,13 +37,14 @@ const styles = (id, callback) => {
         .then((skus) => {
           pool.query(`SELECT * FROM styles y INNER JOIN photos p ON y.id = p.style_id WHERE y.product_id = ${id}`)
             .then((photos) => {
-              let stylesObj = {
+              const stylesObj = {
                 product_id: id,
                 results: [],
               };
+              // console.log(skus.rows);
               const styleIds = prod.rows.map((item) => item.id);
               for (let i = 0; i < styleIds.length; i += 1) {
-                let resultsObject = {
+                const resultsObject = {
                   style_id: prod.rows[i].id,
                   name: prod.rows[i].name,
                   original_price: prod.rows[i].original_price,
@@ -58,7 +59,7 @@ const styles = (id, callback) => {
                     thumbnail_url: item.thumbnail_url,
                     url: item.url,
                   }));
-                const skusArray = skus.rows.filter((item) => (
+                skus.rows.filter((item) => (
                   item.style_id === styleIds[i]
                 ))
                   .forEach((item) => {
